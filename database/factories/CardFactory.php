@@ -3,10 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
- */
 class CardFactory extends Factory
 {
     /**
@@ -33,6 +29,7 @@ class CardFactory extends Factory
             'title' => fake()->text(10),
             'content' => fake()->text() . "<br>" . $answer_input,
             'answer' => $right_answer,
+            'lesson_id' => rand(1,81),
         ];
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Lesson;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +17,7 @@ return new class extends Migration
             $table->string("title");
             $table->longText("content");
             $table->string("answer");
+            $table->foreignIdFor(Lesson::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

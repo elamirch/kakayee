@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
     use HasFactory;
+
+    public function chapters() {
+        return $this->hasMany(Chapter::class);
+    }
+
+    public function major() {
+        return $this->belongsTo(Major::class);        
+    }
 }

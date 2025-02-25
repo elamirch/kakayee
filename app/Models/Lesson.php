@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Lesson extends Model
 {
     use HasFactory;
+
+    public function cards() {
+        return $this->hasMany(Card::class);
+    }
+
+    public function chapter() {
+        return $this->belongsTo(Chapter::class);
+    }
 }

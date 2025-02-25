@@ -17,49 +17,15 @@ class MainController extends Controller
 {
     public function index() {
         //Find the user's major
-        
-        $major = Auth::user()->major;
-        //Get the courses and send it to the view
-        $course_IDs = json_decode(Major::where('name', $major)->first()->courses);
-        $courses = '';
-        foreach ($course_IDs as $course_ID) {
-            $courses = $courses . $course_ID . ": " . Course::where('id', $course_ID)->first()->name . ", ";
-        }
-        
-        $selected_course_ID = trim(explode(":", request('course_prime'))[0]);
-        if($selected_course_ID != ''){
-            $chapters = Course::where('id', $selected_course_ID)->first()->chapters;
-            // {
-            //     "chapter #1": {
-            //         "lesson ID": "lesson Name",
-            //         "lesson ID": "lesson Name",
-            //         "lesson ID": "lesson Name",
-            //     }
-            //     "chapter #2": {
-            //         "lesson ID": "lesson Name",
-            //         "lesson ID": "lesson Name",
-            //         "lesson ID": "lesson Name",
-            //     }
-            // }
-            $chapters_data = "{ ";
-            $chapters = json_decode($chapters);
-            foreach ($chapters as $chapter) {
-                $lessons = json_decode(Chapter::where('id', $chapter)->first()->lessons);
-                $chapters_data = $chapters_data . "\"" . Chapter::where('id', $chapter)->first()->name . "\": {\n";
-                foreach ($lessons as $lesson) {
-                    $chapters_data = $chapters_data . "\"" . $lesson . 
-                    "\": " . "\"" . Lesson::where('id', $lesson)->first()->name . "\",\n";
-                }
-                $chapters_data = substr_replace($chapters_data, "", -1);
-                $chapters_data = substr_replace($chapters_data, "", -1);
-                $chapters_data = $chapters_data . "},\n";
-            }
-            $chapters_data = substr_replace($chapters_data, "", -1);
-            $chapters_data = substr_replace($chapters_data, "", -1);
-            $chapters_data = $chapters_data . " }";
-            return view('/main', ['major' => $major, 'courses' => $courses, 'chapters_data' => $chapters_data]);
+        $major_id = Auth::user()->major_id;
+
+        //Get chapters' data
+        $selected_course_ID = request('course_prime');
+        // dd($selected_course_ID);
+        if(!is_null($selected_course_ID)){
+            return view('/main', ['major' => $major_id, 'courses' => Course::with(Course::class), 'chapters' => Chapter::with(Course::class)]);
         } else {
-            return view('/main', ['major' => $major, 'courses' => $courses]);
+            return view('/main', ['major' => Major::with('courses')->find($major_id)]);
         }
 
         
