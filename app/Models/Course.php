@@ -14,6 +14,6 @@ class Course extends Model
     }
 
     public function major() {
-        return $this->belongsTo(Major::class);        
+        return $this->belongsTo(Major::class)->withDefault();        
     }
 }

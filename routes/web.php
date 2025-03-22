@@ -1,48 +1,41 @@
 <?php
 
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CardController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\LessonController;
+use App\Http\Controllers\MajorController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ChapterController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
 Route::get('/', [MainController::class, 'index'])->middleware(['auth', 'verified'])->name('main');
-Route::post('/show', [MainController::class, 'show'])->middleware(['auth', 'verified'])->name('show');
 
-Route::get('/dashboard', [CardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/lessons/edit', [LessonController::class, 'redirect_to_edit'])->middleware(['auth', 'verified']);
+Route::resource('/lessons', LessonController::class)->middleware(['auth', 'verified']);
+Route::get('/lessons/{lesson}/notes', [LessonController::class, 'notes'])->middleware(['auth', 'verified']);
+Route::post('/lessons/{lesson}/check', [LessonController::class, 'check'])->middleware(['auth', 'verified']);
+Route::post('/redirect_to_main', [LessonController::class, 'post_final_card_answer'])->middleware(['auth', 'verified']);
 
-Route::get("/admin/cards", [AdminController::class, 'cards'])->middleware(['auth', 'verified'])->name('cards');
-Route::post("/admin/cards", [AdminController::class, 'cards'])->middleware(['auth', 'verified'])->name('get_cards');
+Route::get('/majors/edit', [MajorController::class, 'redirect_to_edit'])->middleware(['auth', 'verified']);
+Route::resource('majors', MajorController::class)->middleware(['auth', 'verified']);
 
-Route::get("/admin/lessons", [AdminController::class, 'lessons'])->middleware(['auth', 'verified'])->name('lessons');
-Route::post("/admin/lessons", [AdminController::class, 'lessons'])->middleware(['auth', 'verified'])->name('get_lessons');
+Route::get('/courses/edit', [CourseController::class, 'redirect_to_edit'])->middleware(['auth', 'verified']);
+Route::resource('courses', CourseController::class)->middleware(['auth', 'verified']);
 
-Route::get("/admin/chapters", [AdminController::class, 'chapters'])->middleware(['auth', 'verified'])->name('chapters');
-Route::post("/admin/chapters", [AdminController::class, 'chapters'])->middleware(['auth', 'verified'])->name('get_chapters');
+Route::get('/chapters/edit', [ChapterController::class, 'redirect_to_edit'])->middleware(['auth', 'verified']);
+Route::resource('chapters', ChapterController::class)->middleware(['auth', 'verified']);
 
-Route::get("/admin/courses", [AdminController::class, 'courses'])->middleware(['auth', 'verified'])->name('courses');
-Route::post("/admin/courses", [AdminController::class, 'courses'])->middleware(['auth', 'verified'])->name('get_courses');
+Route::get('/cards/edit', [CardController::class, 'redirect_to_edit'])->middleware(['auth', 'verified']);
+Route::resource('cards', CardController::class)->middleware(['auth', 'verified']);
 
-Route::get("/admin/majors", [AdminController::class, 'majors'])->middleware(['auth', 'verified'])->name('majors');
-Route::post("/admin/majors", [AdminController::class, 'majors'])->middleware(['auth', 'verified'])->name('get_majors');
+Route::get('/dashboard', function() {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get("/admin", function() {
-    return view('admin');
+    return view('admin.index');
 })->middleware(['auth', 'verified'])->name('admin');
-
-
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

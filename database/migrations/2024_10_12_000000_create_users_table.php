@@ -7,27 +7,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->foreignIdFor(Major::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Major::class)->nullable()->constrained()->nullOnDelete();
             $table->json('progress');
             // {
             //      "10": {
             //          "checkpoint": "2"
-            //      }
-            // }
-            $table->json('cycles');
-            // {
-            //      "12": {
-            //          "cycle": "2",
-            //          "time": "time()",
             //      }
             // }
             $table->timestamp('email_verified_at')->nullable();
@@ -39,9 +29,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');

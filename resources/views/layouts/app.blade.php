@@ -28,7 +28,7 @@
             @endif
 
             <!-- Page Content -->
-            <main>
+            <main style="background-color: rgb(202, 202, 202); padding: 15px; margin: 10px; border-radius: 10px;">
                 {{ $slot }}
             </main>
         </div>

@@ -10,6 +10,6 @@ class Card extends Model
     use HasFactory;
 
     public function lesson() {
-        return $this->belongsTo(Lesson::class);
+        return $this->belongsTo(Lesson::class)->withDefault();
     }
 }

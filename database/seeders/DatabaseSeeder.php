@@ -17,12 +17,6 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'elamir',
-        //     'email' => 'amirrezatm@protonmail.com',
-        //     'password' => '0bb8577e5e37e06663d5309cab208409',
-        // ]);
-
         //Add majors
         DB::table('majors')->insert([
             'name' => 'Medical Science',
@@ -55,7 +49,7 @@ class DatabaseSeeder extends Seeder
             DB::table('lessons')->insert([
                 'name' => 'Lesson ' . Str::random(10),
                 'chapter_id' => rand(1,9),
-                'notes' => fake()->url(),
+                'notes' => fake()->text(),
             ]);        
         }
 
@@ -68,7 +62,6 @@ class DatabaseSeeder extends Seeder
             'password' => '$2y$10$5x4.cnGh3M/UKVy3zvnMN.xOpdzIkcJGVKERCvvpunE3y5k7oKb8K',
             'major_id' => 1,
             'progress' => '{}',
-            'cycles' => '{}',
             'xp' => '25',
             'heart' => '55',
         ]);

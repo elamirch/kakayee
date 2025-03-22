@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string("title");
             $table->longText("content");
             $table->string("answer");
-            $table->foreignIdFor(Lesson::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Lesson::class)->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
         });
     }

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->longText('notes');
-            $table->foreignIdFor(Chapter::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Chapter::class)->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
         });
     }
