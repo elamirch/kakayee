@@ -13,7 +13,7 @@ class Lesson extends Model
         return $this->hasMany(Card::class);
     }
 
-    public function chapter() {
-        return $this->belongsTo(Chapter::class)->withDefault();
+    public function course() {
+        return $this->belongsTo(Course::class)->withDefault();
     }
 }

@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Chapter;
-use App\Models\Major;
+use App\Models\Lesson;
 use App\Models\Course;
 
 use Illuminate\Http\Request;
@@ -16,7 +15,7 @@ class CourseController extends Controller
     }
 
     public function create() {
-        return view('admin.courses.create', ['chapters' => Chapter::all()]);
+        return view('admin.courses.create', ['lessons' => Lesson::all()]);
     }
 
     public function store() {
@@ -25,11 +24,11 @@ class CourseController extends Controller
         $course->save();
 
         //Add new chapters
-        if($chapter_ids = request('chapter_ids')) {
-            foreach ($chapter_ids as $chapter_id) {
-                $chapter = Chapter::find($chapter_id);
-                $chapter->course_id = $course->id;
-                $chapter->save();
+        if($lesson_ids = request('lesson_ids')) {
+            foreach ($lesson_ids as $lesson_id) {
+                $lesson = Lesson::find($lesson_id);
+                $lesson->course_id = $course->id;
+                $lesson->save();
             }
         }
 
@@ -43,8 +42,8 @@ class CourseController extends Controller
 
     public function edit(Course $course) {
         return view('admin.courses.edit', [
-            'course' => $course->load('chapters'),
-            'chapters' => Chapter::all()
+            'course' => $course->load('lessons'),
+            'lessons' => Lesson::all()
         ]);
     }
 
@@ -53,21 +52,21 @@ class CourseController extends Controller
         $course->name = request('course_name');
         $course->save();
 
-        //Add new chapters
-        if($chapter_ids = request('chapter_ids')) {
-            foreach ($chapter_ids as $chapter_id) {
-                $chapter = Chapter::find($chapter_id);
-                $chapter->course_id = $course->id;
-                $chapter->save();
+        //Add new lessons
+        if($lesson_ids = request('lesson_ids')) {
+            foreach ($lesson_ids as $lesson_id) {
+                $lesson = Lesson::find($lesson_id);
+                $lesson->course_id = $course->id;
+                $lesson->save();
             }
         }
 
         //Remove courses
-        if($chapter_ids = request('remove_chapters')) {
-            foreach ($chapter_ids as $chapter_id) {
-                $chapter = Chapter::find($chapter_id);
-                $chapter->course_id = null;
-                $chapter->save();
+        if($lesson_ids = request('remove_lessons')) {
+            foreach ($lesson_ids as $lesson_id) {
+                $lesson = Lesson::find($lesson_id);
+                $lesson->course_id = null;
+                $lesson->save();
             }
         }
 

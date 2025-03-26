@@ -35,20 +35,12 @@ class DatabaseSeeder extends Seeder
             'name' => 'Surgery',
             'major_id' => '1',
         ]);
-
-        //Add chapters
-        for ($j=0; $j < 9; $j++) { 
-            DB::table('chapters')->insert([
-                'name' => 'Chapter ' . Str::random(10),
-                'course_id' => rand(1,3),
-           ]);
-        }
         
         //Add lessons
-        for ($i=0; $i < 81; $i++) { 
+        for ($i=0; $i < 10; $i++) { 
             DB::table('lessons')->insert([
                 'name' => 'Lesson ' . Str::random(10),
-                'chapter_id' => rand(1,9),
+                'course_id' => rand(1,3),
                 'notes' => fake()->text(),
             ]);        
         }

@@ -24,7 +24,6 @@
     <ul class="menu-xerac">
         <li class="menu-item-xerac"><a class="menu-link-xerac" href="/cards">Cards</a></li>
         <li class="menu-item-xerac"><a class="menu-link-xerac" href="/lessons">Lessons</a></li>
-        <li class="menu-item-xerac"><a class="menu-link-xerac" href="/chapters">Chapters</a></li>
         <li class="menu-item-xerac"><a class="menu-link-xerac" href="/courses">Courses</a></li>
         <li class="menu-item-xerac"><a class="menu-link-xerac" href="/majors">Majors</a></li>
     </ul>

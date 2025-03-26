@@ -23,7 +23,7 @@ class MainController extends Controller
         if(isset($selected_course_id)){
             return view('/main', [
                 'major' => Major::with('courses')->find($major_id),
-                'selected_course' => Course::with(['chapters.lessons'])->find($selected_course_id)
+                'selected_course' => Course::with(['lessons'])->find($selected_course_id)
             ]);
         } else {
             return view('/main', ['major' => Major::with('courses')->find($major_id)]);

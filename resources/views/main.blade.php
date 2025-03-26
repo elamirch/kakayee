@@ -20,19 +20,14 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    @foreach ( $selected_course->chapters as $chapter)
-                        {{ $chapter->name }}<hr>
-
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                        @foreach ( $chapter->lessons as $lesson)
-                            <form action="/lessons/{{ $lesson->id }}" method="get">
-                                @csrf
-                                <x-primary-button style="padding: 25px; margin: 10px;">{{$lesson->name}}</x-primary-button>
-                            </form>
-                        @endforeach
-                        </div>
-                        <br><br>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                    @foreach ( $selected_course->lessons as $lesson)
+                        <form action="/lessons/{{ $lesson->id }}" method="get">
+                            @csrf
+                            <x-primary-button style="padding: 25px; margin: 10px;">{{$lesson->name}}</x-primary-button>
+                        </form>
                     @endforeach
+                    </div>
                 </div>
             </div>
         </div>

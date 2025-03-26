@@ -5,27 +5,27 @@
         <input type="hidden" name="course_id" value="{{ $course->id }}">
         <input type="text" name="course_name" value="{{ $course->name }}"><br>
         <br>
-        {{-- List of the currently selected course's chapters --}}
-        <h2>Remove Chapters: </h2>
+        {{-- List of the currently selected course's lessons --}}
+        <h2>Remove Lessons: </h2>
         <br>
         <ul>
-            @foreach ( $course->chapters as $chapter )
+            @foreach ( $course->lessons as $lesson )
                 <li>
-                    <input type="checkbox" name="remove_chapters[]" id="{{$chapter->id}}" value="{{$chapter->id}}">
-                    <label for="{{$chapter->id}}">
-                        {{ $chapter->id }}: {{ $chapter->name }}
+                    <input type="checkbox" name="remove_lessons[]" id="{{$lesson->id}}" value="{{$lesson->id}}">
+                    <label for="{{$lesson->id}}">
+                        {{ $lesson->id }}: {{ $lesson->name }}
                     </label>
                 </li>
             @endforeach
         </ul>
         <br>
-        {{-- List of all chapters --}}
+        {{-- List of all lessons --}}
         <hr><br>
-        <h2>Add Chapter: </h2>
+        <h2>Add Lesson: </h2>
         <br>
-        <select name="chapter_ids[]" multiple>
-            @foreach ($chapters as $chapter) 
-                <option value="{{ $chapter->id }}">{{ $chapter->id }}: {{ $chapter->name }}</option>
+        <select name="lesson_ids[]" multiple>
+            @foreach ($lessons as $lesson) 
+                <option value="{{ $lesson->id }}">{{ $lesson->id }}: {{ $lesson->name }}</option>
             @endforeach
         </select>
         <br><br><hr><br>

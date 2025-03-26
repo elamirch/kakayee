@@ -29,7 +29,7 @@ class CardFactory extends Factory
             'title' => fake()->text(10),
             'content' => fake()->text() . "<br>" . $answer_input,
             'answer' => $right_answer,
-            'lesson_id' => rand(1,81),
+            'lesson_id' => rand(1,10),
         ];
     }
 }

@@ -12,6 +12,6 @@ class CardsSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Card::factory(810)->create();
+        \App\Models\Card::factory(100)->create();
     }
 }

@@ -23,9 +23,6 @@ Route::resource('majors', MajorController::class)->middleware(['auth', 'verified
 Route::get('/courses/edit', [CourseController::class, 'redirect_to_edit'])->middleware(['auth', 'verified']);
 Route::resource('courses', CourseController::class)->middleware(['auth', 'verified']);
 
-Route::get('/chapters/edit', [ChapterController::class, 'redirect_to_edit'])->middleware(['auth', 'verified']);
-Route::resource('chapters', ChapterController::class)->middleware(['auth', 'verified']);
-
 Route::get('/cards/edit', [CardController::class, 'redirect_to_edit'])->middleware(['auth', 'verified']);
 Route::resource('cards', CardController::class)->middleware(['auth', 'verified']);
 

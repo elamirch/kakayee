@@ -9,8 +9,8 @@ class Course extends Model
 {
     use HasFactory;
 
-    public function chapters() {
-        return $this->hasMany(Chapter::class);
+    public function lessons() {
+        return $this->hasMany(Lesson::class);
     }
 
     public function major() {
