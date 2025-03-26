@@ -45,6 +45,11 @@ class DatabaseSeeder extends Seeder
             ]);        
         }
 
+        //Add sources
+        DB::table('sources')->insert([
+            'source' => 'Sample 1',
+        ]);
+
         //Add cards
         $this->call(CardsSeeder::class);
         

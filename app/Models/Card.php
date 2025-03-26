@@ -12,4 +12,8 @@ class Card extends Model
     public function lesson() {
         return $this->belongsTo(Lesson::class)->withDefault();
     }
+
+    public function source() {
+        return $this->belongsTo(Source::class)->withDefault();
+    }
 }
