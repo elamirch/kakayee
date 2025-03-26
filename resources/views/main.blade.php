@@ -25,13 +25,9 @@
 
                         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                         @foreach ( $chapter->lessons as $lesson)
-                            <form action="/lessons/{{ $lesson->id }}/notes" method="get">
-                                @csrf
-                                <x-primary-button style="padding: 25px; margin: 10px;">Study {{$lesson->name}}</x-primary-button>
-                            </form>
                             <form action="/lessons/{{ $lesson->id }}" method="get">
                                 @csrf
-                                <x-primary-button style="padding: 25px; margin: 10px;">Cards {{$lesson->name}}</x-primary-button>
+                                <x-primary-button style="padding: 25px; margin: 10px;">{{$lesson->name}}</x-primary-button>
                             </form>
                         @endforeach
                         </div>

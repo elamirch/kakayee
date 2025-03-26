@@ -1,5 +1,4 @@
 <x-app-layout>
-    {{ $card->title }}<br>
     <form action="/lessons/{{$lesson_id}}/check" method="post">
         @csrf
         <br>
