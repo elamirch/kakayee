@@ -19,6 +19,7 @@ class CardController extends Controller
 
     public function store() {
         $card = new Card;
+        dd(request());
         $card->title = request('card_title');
         $card->content = request('card_content');
         $card->date = request('card_date');

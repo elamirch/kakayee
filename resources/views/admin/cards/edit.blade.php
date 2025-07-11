@@ -7,24 +7,27 @@
 
                 <h1>اطلاعات کلی سوال</h1><br>
                 {{--Card Title--}}
+                <span>نام سوال:</span>
                 <input type="text" name="card_title" placeholder="نام سوال"
                     value="{{ $card->title}}">
                 <br>
 
                 {{--Card Content--}}
+                <br><span>محتوای سوال:</span><br>
                 <textarea oninput="updatePreview()" name="card_content" cols="50"
                     rows="6" class="w-full max-w-xl sm:max-w-md md:max-w-lg"
                     placeholder="محتوای سوال" id="card_content">{{ $card->content}}
                 </textarea>
 
                 {{--Card Date--}}
+                <br><br><span>تاریخ سوال:</span>
                 <input type="text" name="card_date" placeholder="تاریخ سوال (مثلا شهریور ۱۴۰۳)"
                 value="{{ $card->date }}">
                 <br><br><hr><br>
                 
                 <h1>افزودن فرم پاسخ</h1><br>
                 <button type="button" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                onclick="addTextInput()">تکست‌باکس</button><br><br><br>
+                onclick="addTextInput()">افزودن تکست‌باکس</button><br><br><br>
                 
                 <input type="text" id="option1" placeholder="گزینه ۱">
                 <input type="text" id="option2" placeholder="گزینه ۲">
@@ -33,7 +36,7 @@
                 <br>
                 <br>
                 <button type="button" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                    onclick="addRadioButtons()">۴ گزینه</button><br><br><hr><br>
+                    onclick="addRadioButtons()">افزودن ۴ گزینه</button><br><br><hr><br>
                 </div>
 
                 {{-- Live preview --}}
@@ -41,6 +44,7 @@
                     class="preview" id="live_preview">Live preview...</div>
         </div>
         
+        <span>پاسخ:</span>
         <input type="text" name="card_answer" placeholder="Card Answer"
             value="{{ $card->answer}}">
         <br><br><hr><br>
@@ -51,11 +55,13 @@
             placeholder="توضیحات این فرم، پس از پاسخ به سوال نمایش داده می‌شوند" id="card_explanation">{{ $card->explanation }}</textarea>
             <br><br><hr><br>
         <x-primary-button>ذخیره</x-primary-button>
-        <form action="/cards/{{$card->id}}" method="post">
-            @csrf
-            @method('DELETE')
-            <x-primary-button>حذف</x-primary-button>
-        </form>
+    </form>
+    <br><hr><br>
+    <form action="/cards/{{$card->id}}" method="post">
+        @csrf
+        @method('DELETE')
+        <span>حذف کارت: </span>
+        <x-primary-button class="bg-red">حذف</x-primary-button>
     </form>
 
     <script>
