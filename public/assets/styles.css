@@ -8,3 +8,23 @@
 body {
   font-family: 'Vazirmatn' !important;
 }
+
+.mask-feather {
+  mask-image: radial-gradient(ellipse at center, black 60%, transparent 100%) !important;
+  -webkit-mask-image: radial-gradient(ellipse at center, black 60%, transparent 100%);
+  mask-repeat: no-repeat;
+  mask-size: cover;
+}
+
+.btn-primary {
+  background-color: #ffc526 !important;
+  color: #013646 !important;
+}
+
+.btn-primary:hover {
+  background-color: #ffdd70 !important;
+}
+
+.btn-primary:active {
+  background-color: #ffc526 !important;
+}
