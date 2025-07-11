@@ -3,6 +3,7 @@
 /public/build
 /public/hot
 /public/storage
+/public/course-notes
 /storage/*.key
 /vendor
 .env
