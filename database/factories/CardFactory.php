@@ -14,16 +14,13 @@ class CardFactory extends Factory
     {
         $right_answer = fake()->text(10);
         if (mt_rand(0, 1) == 1) {
-            $answer_input = "<br><input type=\"text\" name=\"answer\" placeholder=\"". $right_answer. "\">";
+            ob_start();
+            include('component/text-answer-input.php');
+            $answer_input = ob_get_clean();
         } else {
-            $answer_input = "<input type=\"radio\" id=\"choice1\" name=\"answer\" value=\"option1\">
-            <label for=\"choice1\">" . fake()->text(10) . "</label><br>
-            <input type=\"radio\" id=\"choice2\" name=\"answer\" value=\"option1\">
-            <label for=\"choice2\">" . fake()->text(10) . "</label><br>
-            <input type=\"radio\" id=\"choice3\" name=\"answer\" value=\"" . $right_answer . "\">
-            <label for=\"choice3\">" . $right_answer . "</label><br>
-            <input type=\"radio\" id=\"choice4\" name=\"answer\" value=\"option1\">
-            <label for=\"choice4\">" . fake()->text(10) . "</label><br>";
+            ob_start();
+            include('component/4-choice-answer-input.php');
+            $answer_input = ob_get_clean();
         }
         return [
             'title' => fake()->text(10),
