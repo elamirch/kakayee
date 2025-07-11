@@ -5,6 +5,6 @@
             @csrf
             <input type="hidden" name="lesson_id" value="{{ request('lesson_id') }}">
             <input type="hidden" name="step" value="1">
-        <x-primary-button>Go to cards</x-primary-button>
+        <x-primary-button>رفتن به سوالات</x-primary-button>
     </form>
 </x-app-layout>

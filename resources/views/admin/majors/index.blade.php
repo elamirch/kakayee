@@ -6,12 +6,12 @@
                 <option value="{{ $major->id }}">{{ $major->id }}: {{ $major->name }}</option>
             @endforeach
         </select>
-        <x-primary-button>Select</x-primary-button>
+        <x-primary-button>انتخاب</x-primary-button>
     </form>
         
     <form action="/majors/create" method="get">
         @csrf
         <br>
-        <x-primary-button>Add a new major</x-primary-button>
+        <x-primary-button>افزودن رشته جدید</x-primary-button>
     </form>
 </x-admin>

@@ -12,7 +12,7 @@
                 <option value="{{ $course->id }}">{{ $course->name }}</option>
             @endforeach
         </select>
-        <x-primary-button>Select</x-primary-button>
+        <x-primary-button>انتخاب</x-primary-button>
     </form>
         {{ session('lesson_completed') }}
     @isset($selected_course)
