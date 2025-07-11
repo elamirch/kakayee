@@ -27,9 +27,9 @@ class CardFactory extends Factory
         }
         return [
             'title' => fake()->text(10),
-            'content' => fake()->text(10) . "<br>" . $answer_input,
+            'content' => fake()->text() . "<br>" . $answer_input,
             'answer' => $right_answer,
-            'date' => fake()->text(),
+            'date' => fake()->text(10),
             'lesson_id' => rand(1,10),
             'source_id' => 1,
             'explanation' => fake()->text()

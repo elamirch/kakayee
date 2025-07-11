@@ -3,7 +3,16 @@
         @csrf
         <x-primary-button>Back To Home</x-primary-button>
     </form>
-    <x-red-flash-message>
-        {{ session('answer_status') }}
-    </x-red-flash-message>
+    @if(session('answer_status') && isset(session('answer_status')['flash_message']))
+        @php
+        if(session('answer_status')['right']) {
+            $title = "Right";
+        } else {
+            $title = "Wrong";
+        }
+    @endphp
+    <x-flash-message title="{{$title}}">
+        {!! session('answer_status')['flash_message'] !!}
+    </x-flash-message>
+    @endif
 </x-app-layout>

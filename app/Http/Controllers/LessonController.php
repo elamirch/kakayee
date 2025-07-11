@@ -81,6 +81,7 @@ class LessonController extends Controller
         $lesson->delete();
         return redirect("/", 302);
     }
+
     public function show(Lesson $lesson, Request $request) {
         //Get Cards
         $cards = $lesson->cards()->oldest()->get();
@@ -111,6 +112,7 @@ class LessonController extends Controller
             'card' => $currentCard
         ]);
     }
+
     public function check(Request $request, Lesson $lesson) {
         //Get Cards
         $cards = $lesson->cards()->oldest()->get();
@@ -131,18 +133,26 @@ class LessonController extends Controller
             $this->lose_a_heart(Auth::id());
 
             //Send the right answer and user's wrong answer as a flash message
-            $answer_status = "Wrong!\nRight answer: " .  $currentCard->answer .
-            "\nYour answer: " . $validated['answer'];
+            $answer_status = [
+                "right" => false,
+                "flash_message" =>
+                    "<i>Right answer:</i> " . $currentCard->answer
+            ];
         } else {
             //Send the right answer as a flash message
-            $answer_status = "Correct!\nAnswer: " . $currentCard->answer;
+            $answer_status = [
+                "right" => true,
+                "flash_message" => "<i>Answer:</i> " . $currentCard->answer
+            ];
         }
 
         //Move to next step
         session(["lesson_{$lesson->id}_step" => $currentStep + 1]);
 
         return redirect("/lessons/$lesson->id", 302)->with('answer_status', $answer_status);
+    
     }
+
     public function post_final_card_answer() {
         //Redirect to main with a congrats message
         return redirect('/')->with('lesson_completed', 'Congratulations! You earned 10 XP for completing this lesson!');
@@ -159,7 +169,9 @@ class LessonController extends Controller
         $user->heart = $user->heart - 1;
         $user->save();
     }
+
     public function notes(Lesson $lesson) {
         return view("notes", ['notes' => $lesson->notes, 'lesson_id' => $lesson->id]);
     }
+
 }
