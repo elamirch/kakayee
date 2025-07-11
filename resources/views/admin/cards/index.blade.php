@@ -6,12 +6,12 @@
                 <option value="{{ $card->id }}">{{ $card->id }}: {{ $card->title }}</option>
             @endforeach
         </select>
-        <x-primary-button>Select</x-primary-button>
+        <x-primary-button>انتخاب</x-primary-button>
     </form>
         
     <form action="/cards/create" method="get">
         @csrf
         <br>
-        <x-primary-button>Add a new card</x-primary-button>
+        <x-primary-button>افزودن سوال جدید</x-primary-button>
     </form>
 </x-admin>
