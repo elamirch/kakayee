@@ -3,10 +3,19 @@
         @csrf
         <div style="display: flex; gap: 20px;">
             <div style="width: 50%">
+            
+            {{-- Card Title --}}
             <input type="text" name="card_title" placeholder="Card Title"><br>
 
-            <textarea oninput="updatePreview()" name="card_content" rows="6" cols="50" placeholder="Card Content" id="card_content"></textarea><br>
-            <br><hr><br>
+            {{-- Card Content --}}
+            <textarea oninput="updatePreview()" name="card_content"
+            rows="6" cols="50" placeholder="Card Content"
+            id="card_content"></textarea><br>
+            
+            {{--Card Date--}}
+            <input type="text" name="card_date" placeholder="Card Date">
+            <br>
+            <hr><br>
             <button type="button" class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
                 onclick="addTextInput()">Add Text Input</button><br><br><hr><br>
                 
@@ -20,6 +29,11 @@
             <div style="width: 50%; padding: 20px; border-color: black; border-width: 2px; border-radius: 5px;"
                 class="preview" id="live_preview">Live preview...</div>
         </div>
+
+        {{--Card Explanation--}}
+        <textarea oninput="updatePreview()" name="card_explanation" rows="6" cols="50"
+            placeholder="Card Explanation" id="card_explanation"></textarea>
+        <br>
         
         <input type="text" name="card_answer" placeholder="Card Answer"><br><br><hr><br>
         <x-primary-button>Add Card</x-primary-button>

@@ -21,6 +21,8 @@ class CardController extends Controller
         $card = new Card;
         $card->title = request('card_title');
         $card->content = request('card_content');
+        $card->date = request('card_date');
+        $card->explanation = request('card_explanation');
         $card->answer = request('card_answer');
         $card->save();
 
@@ -42,6 +44,8 @@ class CardController extends Controller
         //Update card
         $card->title = request('card_title');
         $card->content = request('card_content');
+        $card->date = request('card_date');
+        $card->explanation = request('card_explanation');
         $card->answer = request('card_answer');
         $card->save();;
 

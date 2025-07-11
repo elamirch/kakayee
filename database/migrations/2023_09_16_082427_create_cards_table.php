@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string("title");
             $table->longText("content");
             $table->string("answer");
+            $table->string("date");
             $table->longText("explanation");
             $table->foreignIdFor(Source::class)->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(Lesson::class)->nullable()->constrained()->nullOnDelete();
