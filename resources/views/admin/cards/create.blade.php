@@ -54,7 +54,7 @@
 
         function addTextInput() {
             let textArea = document.getElementById("card_content");
-            textArea.value += '\n\n<br><br><input type="text" name="answer" placeholder="Answer">';
+            textArea.value += '\n\n<br><br><input type="text" name="answer" placeholder="پاسخ">';
             updatePreview();
         }
 
