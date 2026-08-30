@@ -1,4 +1,0 @@
-views are repeated in each resource
-comments not enough
-admin role isn't checked, everyone can edit things
-what's wrong with merge?
