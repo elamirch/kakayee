@@ -8,27 +8,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('cards', function (Blueprint $table) {
             $table->id();
-            $table->string("title");
-            $table->longText("content");
-            $table->string("answer");
-            $table->string("date");
-            $table->longText("explanation");
+            $table->json('title');
+            $table->json('content');
+            $table->json('answer');
+            $table->string('date')->nullable();
+            $table->json('explanation')->nullable();
+            $table->unsignedInteger('order')->default(0);
             $table->foreignIdFor(Source::class)->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(Lesson::class)->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('cards');

@@ -1,66 +1,80 @@
 <?php
 
 namespace Database\Seeders;
-use Illuminate\Support\Facades\DB;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\City;
+use App\Models\Major;
+use App\Models\User;
+use App\Models\XpTransaction;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        //Add majors
-        DB::table('majors')->insert([
-            'name' => 'Medical Science',
+        $this->call([
+            LocationSeeder::class,
+            ContentSeeder::class,
+            QuestSeeder::class,
+            AchievementSeeder::class,
         ]);
 
-        //Add courses
-        DB::table('courses')->insert([
-            'name' => 'Psychiatry',
-            'major_id' => '1',
+        $this->seedUsers();
+    }
+
+    protected function seedUsers(): void
+    {
+        $medical = Major::first();
+        $cities = City::all();
+
+        User::factory()->create([
+            'phone_number' => '09123456789',
+            'name' => 'Admin',
+            'first_name' => 'Admin',
+            'last_name' => 'Kakayee',
+            'role' => 'admin',
+            'major_id' => $medical?->id,
+            'xp' => 500,
+            'gems' => 500,
         ]);
-        DB::table('courses')->insert([
-            'name' => 'Public Health',
-            'major_id' => '1',
-        ]);
-        DB::table('courses')->insert([
-            'name' => 'Surgery',
-            'major_id' => '1',
-        ]);
-        
-        //Add lessons
-        for ($i=0; $i < 10; $i++) { 
-            DB::table('lessons')->insert([
-                'name' => 'Lesson ' . Str::random(10),
-                'course_id' => rand(1,3),
-                'notes' => fake()->text(),
-            ]);        
+
+        $distributed = [
+            ['Tehran', 3],
+            ['Mashhad', 2],
+            ['Isfahan', 2],
+            ['Shiraz', 2],
+            ['Tabriz', 2],
+            ['Karaj', 2],
+            ['Ahvaz', 1],
+            ['Rasht', 1],
+        ];
+
+        foreach ($distributed as [$cityEn, $count]) {
+            $city = $cities->first(fn ($c) => $c->getTranslation('name', 'en') === $cityEn);
+            if (! $city) {
+                continue;
+            }
+
+            for ($i = 0; $i < $count; $i++) {
+                $user = User::factory()->create([
+                    'major_id' => $medical?->id,
+                    'country_id' => $city->province->country_id,
+                    'province_id' => $city->province_id,
+                    'city_id' => $city->id,
+                    'xp' => fake()->numberBetween(50, 2500),
+                ]);
+
+                // Seed recent xp transactions so weekly/daily leaderboards have data.
+                for ($d = 0; $d < 7; $d++) {
+                    XpTransaction::create([
+                        'user_id' => $user->id,
+                        'amount' => fake()->numberBetween(5, 30),
+                        'reason' => 'answer_correct',
+                        'created_at' => Carbon::now()->subDays($d)->subHours(fake()->numberBetween(1, 20)),
+                    ]);
+                }
+            }
         }
-
-        //Add sources
-        DB::table('sources')->insert([
-            'source' => 'Sample 1',
-        ]);
-
-        //Add cards
-        $this->call(CardsSeeder::class);
-        
-        DB::table('users')->insert([
-            'name' => 'elamir',
-            'email' => 'amirrezatm@protonmail.com',
-            'password' => '$2y$10$5x4.cnGh3M/UKVy3zvnMN.xOpdzIkcJGVKERCvvpunE3y5k7oKb8K',
-            'major_id' => 1,
-            'progress' => '{}',
-            'xp' => '25',
-            'heart' => '55',
-        ]);
     }
 }

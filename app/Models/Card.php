@@ -4,16 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class Card extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
-    public function lesson() {
+    public $translatable = ['title', 'content', 'answer', 'explanation'];
+
+    protected $guarded = [];
+
+    protected $hidden = ['answer'];
+
+    public function lesson()
+    {
         return $this->belongsTo(Lesson::class)->withDefault();
     }
 
-    public function source() {
+    public function source()
+    {
         return $this->belongsTo(Source::class)->withDefault();
     }
 }

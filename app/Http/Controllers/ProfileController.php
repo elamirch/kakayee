@@ -2,59 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
+use App\Services\UserStateService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    public function __construct(protected UserStateService $userState) {}
+
+    public function update(Request $request)
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
-    }
-
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
 
-        Auth::logout();
+        $validated = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:users,email,'.$user->id,
+            'gender' => 'nullable|string|in:male,female,other',
+            'birth_date' => 'nullable|date',
+            'profile_img_url' => 'nullable|string|max:2048',
+            'major_id' => 'nullable|integer|exists:majors,id',
+            'country_id' => 'nullable|integer|exists:countries,id',
+            'province_id' => 'nullable|integer|exists:provinces,id',
+            'city_id' => 'nullable|integer|exists:cities,id',
+            'daily_goal' => 'nullable|integer|between:5,200',
+        ]);
 
-        $user->delete();
+        $user->update($validated);
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return response()->json([
+            'message' => 'Profile updated',
+            'user' => $this->userState->build($user),
+        ]);
     }
 }

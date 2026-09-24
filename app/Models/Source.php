@@ -4,12 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
-class source extends Model
+class Source extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
-    public function cards(){
+    public $translatable = ['source'];
+
+    protected $guarded = [];
+
+    public function cards()
+    {
         return $this->hasMany(Card::class);
     }
 }

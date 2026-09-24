@@ -3,91 +3,68 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\UserStateService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class UserController extends Controller
 {
+    public function __construct(protected UserStateService $userState) {}
+
     public function index()
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized');
-        }
-        return User::all();
-    }
+        abort_unless(auth()->user()->isAdmin(), 403);
 
-    public function store(Request $request)
-    {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized');
-        }
-        $data = $request->validate([
-            'phone_number' => 'required|string|unique:users,phone_number',
-            'first_name'   => 'nullable|string',
-            'last_name'    => 'nullable|string',
-            'email'        => 'nullable|email|unique:users,email',
-            'height'       => 'nullable|integer',
-            'weight'       => 'nullable|integer',
-            'ideal_weight' => 'nullable|integer',
-            'BMI'          => 'nullable|numeric',
-            'daily_calories' => 'nullable|integer',
-            'gender'       => 'nullable|string',
-            'blood_type'   => 'nullable|string',
-            'age'          => 'nullable|integer',
-            'profile_img_url' => 'nullable|string|unique:users,profile_img_url',
-            'otp_code'     => 'nullable|integer',
-            'otp_code_expiration' => 'nullable|date',
-            'refresh_token' => 'nullable|string',
-            'birth_date'    => 'nullable|date',
-            'role'          => 'nullable|string|in:user,admin',
+        return response()->json([
+            'users' => User::query()
+                ->with('major', 'country', 'province', 'city')
+                ->orderBy('id')
+                ->get()
+                ->map(fn ($user) => $this->userState->build($user)),
         ]);
-
-        $user = User::create($data);
-
-        return response()->json($user, 201);
     }
 
     public function show(User $user)
     {
-        if (auth()->id() !== $user->id && auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized');
+        if (! auth()->user()->isAdmin() && auth()->id() !== $user->id) {
+            abort(403);
         }
-        return $user;
+
+        return response()->json(['user' => $this->userState->build($user)]);
     }
 
     public function update(Request $request, User $user)
     {
-        if (auth()->id() !== $user->id && auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized');
+        if (! auth()->user()->isAdmin() && auth()->id() !== $user->id) {
+            abort(403);
         }
-        $data = $request->validate([
-            'phone_number' => 'nullable|string|unique:users,phone_number,' . $user->id,
-            'first_name'   => 'nullable|string',
-            'last_name'    => 'nullable|string',
-            'email'        => 'nullable|email|unique:users,email,' . $user->id,
-            'height'       => 'nullable|integer',
-            'weight'       => 'nullable|integer',
-            'ideal_weight' => 'nullable|integer',
-            'BMI'          => 'nullable|numeric',
-            'daily_calories' => 'nullable|integer',
-            'gender'       => 'nullable|string',
-            'blood_type'   => 'nullable|string',
-            'age'          => 'nullable|integer',
-            'profile_img_url' => 'nullable|string|unique:users,profile_img_url,' . $user->id,
-            'birth_date'    => 'nullable|date',
+
+        $validated = $request->validate([
+            'phone_number' => 'sometimes|regex:/^09\d{9}$/|unique:users,phone_number,'.$user->id,
+            'email' => 'sometimes|nullable|email|unique:users,email,'.$user->id,
+            'name' => 'sometimes|nullable|string|max:255',
+            'first_name' => 'sometimes|nullable|string|max:255',
+            'last_name' => 'sometimes|nullable|string|max:255',
+            'role' => 'sometimes|string|in:user,admin',
+            'profile_img_url' => 'sometimes|nullable|string|max:2048',
+            'major_id' => 'sometimes|nullable|integer|exists:majors,id',
+            'country_id' => 'sometimes|nullable|integer|exists:countries,id',
+            'province_id' => 'sometimes|nullable|integer|exists:provinces,id',
+            'city_id' => 'sometimes|nullable|integer|exists:cities,id',
+            'xp' => 'sometimes|nullable|integer|min:0',
+            'gems' => 'sometimes|nullable|integer|min:0',
+            'heart' => 'sometimes|nullable|integer|min:0',
+            'daily_goal' => 'sometimes|nullable|integer|between:5,200',
         ]);
 
-        $user->update($data);
+        $user->update($validated);
 
-        return $user;
+        return response()->json(['user' => $this->userState->build($user)]);
     }
 
     public function destroy(User $user)
     {
-        if (auth()->id() !== $user->id && auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized');
+        if (! auth()->user()->isAdmin() && auth()->id() !== $user->id) {
+            abort(403);
         }
         $user->delete();
 

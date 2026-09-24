@@ -3,16 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Carbon\Carbon;
 use App\Services\SendSMS;
+use App\Services\UserStateService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
+    public function __construct(protected UserStateService $userState) {}
+
     /**
-     * Send OTP
+     * Send an OTP code to the given phone number.
+     *
      * @unauthenticated
      */
     public function sendotp(Request $request)
@@ -21,71 +25,116 @@ class AuthController extends Controller
             'phone_number' => 'required|regex:/^09\d{9}$/',
         ]);
 
-        $otp_code = env('APP_DEBUG') ? 11111 : rand(10000, 99999);
+        $otpCode = app()->environment('local', 'testing') ? 11111 : random_int(10000, 99999);
 
-        $user = User::where('phone_number', $validated['phone_number'])->first();
-        $user->otp_code = $otp_code;
+        $user = User::firstOrCreate(
+            ['phone_number' => $validated['phone_number']],
+            [
+                'role' => 'user',
+                'gems' => config('gamification.gems.starting_amount', 100),
+            ]
+        );
+
+        $user->otp_code = (string) $otpCode;
+        $user->otp_code_expiration = Carbon::now()->addMinutes(5);
         $user->save();
 
-        if(env('APP_DEBUG')) {
-            return response()->json([
-                'message' => 'success: on debug mode, otp is 11111',
-            ]);
-        } else {
+        $debugOtp = app()->environment('local', 'testing') ? $otpCode : null;
+
+        if (! app()->environment('local', 'testing')) {
             $sendSMS = new SendSMS;
-            $response = $sendSMS->otp($validated['phone_number'], $otp_code);
-
-            return response()->json([
-                'message' => 'success: OTP request sent',
-                'API Response' => $response
-            ]);
+            $sendSMS->otp($validated['phone_number'], $otpCode);
         }
+
+        return response()->json([
+            'message' => 'OTP sent successfully',
+            'debug_otp' => $debugOtp,
+        ]);
     }
 
     /**
-     * Logout user
-    */
-    public function logout()
+     * Verify the OTP and log the user in.
+     *
+     * @unauthenticated
+     */
+    public function authenticate(Request $request)
     {
-        JWTAuth::invalidate(JWTAuth::getToken());
-        return response()->json(['message' => 'Logged out successfully']);
-    }
-    
-    /**
-     * Get authenticated user profile
-    */
-    public function profile()
-    {
-        return response()->json(auth()->user());
+        $validated = $request->validate([
+            'phone_number' => 'required|regex:/^09\d{9}$/',
+            'otp_code' => 'required|digits:5',
+        ]);
+
+        $user = User::where('phone_number', $validated['phone_number'])->first();
+
+        if (! $user) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
+        }
+
+        $debugOtp = app()->environment('local', 'testing') ? '11111' : null;
+        $expected = $debugOtp ?? $user->otp_code;
+
+        if (! $expected || ! hash_equals((string) $expected, (string) $validated['otp_code'])) {
+            return response()->json(['error' => 'Invalid OTP'], 401);
+        }
+
+        if ($user->otp_code_expiration && $user->otp_code_expiration->lt(Carbon::now())) {
+            return response()->json(['error' => 'OTP expired'], 401);
+        }
+
+        $user->otp_code = null;
+        $user->otp_code_expiration = null;
+        $user->save();
+
+        $token = JWTAuth::claims([
+            'last_logout' => $user->last_logout ? $user->last_logout->timestamp : 0,
+        ])->fromUser($user);
+
+        return response()->json([
+            'message' => 'Login successful',
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'user' => $this->userState->build($user),
+        ]);
     }
 
     /**
-     * Refresh tokens
-    */
+     * Refresh the current access token.
+     *
+     * @unauthenticated
+     */
     public function refreshTokens()
     {
         try {
             $newToken = JWTAuth::claims([
                 'expires_in' => config('jwt.ttl') * 60,
-                'refresh_ttl' => config('jwt.refresh_ttl') * 60
-                ])->setToken(JWTAuth::getToken())
-                ->refresh();
+                'refresh_ttl' => config('jwt.refresh_ttl') * 60,
+            ])->setToken(JWTAuth::getToken())->refresh();
+
             return response()->json([
                 'access_token' => $newToken,
-                'token_type' => 'bearer'
+                'token_type' => 'bearer',
             ]);
         } catch (TokenExpiredException $e) {
             return response()->json(['error' => 'Token expired, please login again'], 401);
         }
     }
-    
+
     /**
-     * Log out of all devices
-    */
+     * Log out of the current device.
+     */
+    public function logout()
+    {
+        JWTAuth::invalidate(JWTAuth::getToken());
+
+        return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    /**
+     * Log out of all devices by bumping the last_logout timestamp.
+     */
     public function logoutAllDevices()
     {
-        $user = JWTAuth::user();
-    
+        $user = auth()->user();
         $user->last_logout = Carbon::now();
         $user->save();
 
@@ -93,65 +142,10 @@ class AuthController extends Controller
     }
 
     /**
-     * Get token info
-    */
-    public function tokenInfo() {
-        return response()->json(['Token info' => JWTAuth::getPayload()]);
-    }
-
-    /**
-     * Unified authentication endpoint.
-     *
-     * @unauthenticated
-    */
-    public function authenticate(Request $request)
+     * Get the authenticated user's full profile/state.
+     */
+    public function profile()
     {
-        $validated = $request->validate([
-            'phone_number' => 'required|regex:/^09\d{9}$/',
-            'otp_code'     => 'required|integer|digits:5',
-        ]);
-
-        $user = User::where('phone_number', $validated['phone_number'])->first();
-
-        $otp_code = env('APP_DEBUG') ? 11111 : $user->otp_code;
-
-        if ($user) {
-            if (!isset($validated['otp_code']) ||
-                $otp_code != (int) $validated['otp_code']) 
-            {
-                return response()->json(['error' => 'Invalid OTP'], 401);
-            }
-
-            $access_token = JWTAuth::claims([
-                'expires_in' => config('jwt.ttl') * 60,
-                'refresh_ttl' => config('jwt.refresh_ttl') * 60
-                ])->fromUser($user);
-
-            $user->otp_code = null;
-            $user->save();
-
-            return response()->json([
-                'message'        => 'Login successful',
-                'user'           => $user,
-                'access_token' => $access_token,
-            ]);
-        }
-
-        $user = User::create([
-            'phone_number'  => $validated['phone_number'],
-            'otp_code'      => $otp_code,
-            'role'          => 'user',
-        ]);
-        $access_token = JWTAuth::claims([
-                'expires_in' => config('jwt.ttl') * 60,
-                'refresh_ttl' => config('jwt.refresh_ttl') * 60
-                ])->fromUser($user);
-
-        // OTP Logic shall be added
-        return response()->json([
-            'message' => 'User registered.',
-            'user' => $user,
-            'access_token' => $access_token,
-        ], 201);
+        return response()->json($this->userState->build(auth()->user()));
     }
 }

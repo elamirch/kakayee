@@ -7,23 +7,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->longText('notes'); //Not implemented for now
+            $table->json('name');
+            $table->json('notes')->nullable();
             $table->foreignIdFor(Course::class)->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('lessons');

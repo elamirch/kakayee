@@ -1,80 +1,61 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Lesson;
-use App\Models\Course;
 
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
-{    
-    public function index() {
-        return view('admin.courses.index', [
-            'courses' => Course::all()
+{
+    public function index(Request $request)
+    {
+        $query = Course::query()
+            ->withCount('lessons')
+            ->when($request->has('major_id'), fn ($q) => $q->where('major_id', $request->integer('major_id')));
+
+        $courses = $query->get();
+
+        return response()->json([
+            'courses' => $courses->map(fn ($course) => [
+                'id' => $course->id,
+                'name' => $course->name,
+                'major_id' => $course->major_id,
+                'lessons_count' => (int) $course->lessons_count,
+            ]),
         ]);
     }
 
-    public function create() {
-        return view('admin.courses.create', ['lessons' => Lesson::all()]);
-    }
+    public function show(Course $course)
+    {
+        $course->load('lessons');
 
-    public function store() {
-        $course = new Course;
-        $course->name = request('course_name');
-        $course->save();
-
-        //Add new chapters
-        if($lesson_ids = request('lesson_ids')) {
-            foreach ($lesson_ids as $lesson_id) {
-                $lesson = Lesson::find($lesson_id);
-                $lesson->course_id = $course->id;
-                $lesson->save();
-            }
-        }
-
-        return redirect("/courses", 302);
-    }
-
-    public function redirect_to_edit(Request $request) {
-        $selected_course_id = $request->course_id;
-        return redirect("/courses/$selected_course_id/edit", 302);
-    }
-
-    public function edit(Course $course) {
-        return view('admin.courses.edit', [
-            'course' => $course->load('lessons'),
-            'lessons' => Lesson::all()
+        return response()->json([
+            'course' => [
+                'id' => $course->id,
+                'name' => $course->name,
+                'major' => $course->major ? ['id' => $course->major->id, 'name' => $course->major->name] : null,
+                'lessons' => $course->lessons->map(fn ($lesson) => [
+                    'id' => $lesson->id,
+                    'name' => $lesson->name,
+                    'cards_count' => $lesson->cards()->count(),
+                ])->values(),
+            ],
         ]);
     }
 
-    public function update(Course $course) {
-        //Update major name
-        $course->name = request('course_name');
-        $course->save();
+    /**
+     * Select the user's active course.
+     */
+    public function select(Request $request)
+    {
+        $validated = $request->validate([
+            'course_id' => 'required|integer|exists:courses,id',
+        ]);
 
-        //Add new lessons
-        if($lesson_ids = request('lesson_ids')) {
-            foreach ($lesson_ids as $lesson_id) {
-                $lesson = Lesson::find($lesson_id);
-                $lesson->course_id = $course->id;
-                $lesson->save();
-            }
-        }
+        $user = $request->user();
+        $user->major_id = Course::findOrFail($validated['course_id'])->major_id;
+        $user->save();
 
-        //Remove courses
-        if($lesson_ids = request('remove_lessons')) {
-            foreach ($lesson_ids as $lesson_id) {
-                $lesson = Lesson::find($lesson_id);
-                $lesson->course_id = null;
-                $lesson->save();
-            }
-        }
-
-        return redirect("/courses/$course->id/edit", 302);
-    }
-
-    public function destroy(Course $course) {
-        $course->delete();
-        return redirect("/", 302);
+        return response()->json(['message' => 'Course selected']);
     }
 }

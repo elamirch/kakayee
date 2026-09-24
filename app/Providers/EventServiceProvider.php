@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\XpAwarded;
+use App\Listeners\CheckAchievements;
+use App\Listeners\RegisterQuestProgress;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +20,10 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        XpAwarded::class => [
+            RegisterQuestProgress::class,
+            CheckAchievements::class,
         ],
     ];
 
